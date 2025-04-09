@@ -114,3 +114,10 @@ def grade_entry(browser, speaking, listening, reading, audio, engagement):
     sleep(3)
     browser.find_element(By.XPATH, '//*[@id="btnSalvar_div"]/div/center/span').click()
     sleep(3)
+
+def remover_search(browser):
+    browser.switch_to.default_content()
+    browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_tab_tabGrid_acAlunoFR_acAlunoFRTextBox"]').send_keys(Keys.CONTROL + 'a')
+    sleep(0.3)
+    browser.find_element(By.XPATH, '//*[@id="ctl00_ContentPlaceHolder1_tab_tabGrid_acAlunoFR_acAlunoFRTextBox"]').send_keys(Keys.DELETE)
+    sleep(0.3)
