@@ -1,12 +1,63 @@
 #%%
-
+import os.path
 from time import sleep
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
+
+def googlesheets_integration():
+
+  # If modifying these scopes, delete the file token.json.
+  SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+  SPREADSHEET_ID = "1Ybq0TT1LRfEjZ55c8RY5-1PachdLFg-rLWpAYuNnJUk"
+  SHEETS_NAMES = ['Leonardo', 'Mayara']
+  creds = None
+
+  if os.path.exists("..\\token.json"):
+    creds = Credentials.from_authorized_user_file("..\\token.json", SCOPES)
+
+  if not creds or not creds.valid:
+    if creds and creds.expired and creds.refresh_token:
+      creds.refresh(Request())
+    else:
+      flow = InstalledAppFlow.from_client_secrets_file(
+          "..\\client_secret.json", SCOPES
+      )
+      creds = flow.run_local_server(port=0)
+    with open("..\\token.json", "w") as token:
+      token.write(creds.to_json())
+
+  service = build("sheets", "v4", credentials=creds)
+
+  return service, SHEETS_NAMES, SPREADSHEET_ID
+
+def get_data_from_googlesheets():
+  service, sheets_names, spreadsheet_id = googlesheets_integration()
+  full_list = []
+
+  try:
+    for sheet in sheets_names:
+      range_name = f'{sheet}!A:M'
+      sheet = service.spreadsheets()
+      result = (
+          sheet.values()
+          .get(spreadsheetId=spreadsheet_id, range=range_name)
+          .execute())
+      values = result.get("values", [])
+      full_list.append(values)
+
+  except HttpError as err:
+    print(f"An error occurred: {err}")
+
+  return full_list
 
 # Opening browser
 def open_browser():
