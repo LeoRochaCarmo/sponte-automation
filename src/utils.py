@@ -1,6 +1,7 @@
 #%%
 import os.path
 from time import sleep
+import pandas as pd
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -57,7 +58,26 @@ def get_data_from_googlesheets():
   except HttpError as err:
     print(f"An error occurred: {err}")
 
-  return full_list
+  return full_list, sheets_names
+
+def data_frame_creation():
+  registers, teachers = get_data_from_googlesheets()
+  headers = registers[0][0]
+  num_columns = len(headers)
+
+  dfs = []
+
+  for i in range(len(registers)):
+    cleaned_values = [row 
+                      if len(row) == num_columns else row + [''] * (num_columns - len(row)) 
+                      for row in registers[i][1:]]
+    df = pd.DataFrame(cleaned_values, columns=headers)
+    df['professor'] = teachers[i]
+    dfs.append(df)
+
+  combined_df = pd.concat(dfs, ignore_index=True)
+
+  return combined_df
 
 # Opening browser
 def open_browser():
@@ -141,7 +161,6 @@ def class_data(browser, class_situation, formated_data, lesson):
     browser.find_element(By.XPATH, '//*[@id="tab_TabPanel1_wcdData_txtData"]').send_keys(formated_data)
     sleep(1)
     
-
 # Entering grades
 def grade_entry(browser, speaking, listening, reading, audio, engagement):
     browser.find_element(By.XPATH, '//*[@id="__tab_tab_TabPanel2"]').click()
