@@ -98,6 +98,7 @@ def access_interative(browser):
     browser.find_element(By.XPATH, '//*[@id="menuNovo"]/li[2]/a').click()
     browser.find_element(By.XPATH, '//*[@id="menuNovo"]/li[2]/ul/li[14]/a').click()
     browser.find_element(By.XPATH, '//*[@id="menuNovo"]/li[2]/ul/li[14]/ul/li[1]/a').click()
+    sleep(2)
 
 # Cleaning quick filters
 def quick_filters(browser):
@@ -113,6 +114,7 @@ def quick_filters(browser):
     action.click(teacher)
     action.send_keys('selecione', Keys.ENTER)
     action.perform()
+    sleep(2)
 
 # Searching student
 def search_student(browser, enrollment_number):
@@ -182,7 +184,7 @@ def grade_entry(browser, speaking, listening, reading, audio, engagement):
     sleep(0.3)
     browser.find_element(By.XPATH, '//*[@id="tab_TabPanel2_btnSalvarNotas_div"]/div/center/span').click()
     sleep(3)
-    browser.find_element(By.XPATH, '//*[@id="btnSalvar_div"]/div/center/span').click()
+    browser.find_element(By.XPATH, '//*[@id="btnSair_div"]/div/center/span').click()
     sleep(3)
 
 def remover_search(browser):
